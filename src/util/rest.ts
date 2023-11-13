@@ -43,3 +43,43 @@ export async function verifyToken(token: string) {
     },
   });
 }
+
+export async function createCalendar(
+  name: string,
+  year: number,
+  token: string,
+) {
+  return await makeRequest({
+    path: "/api/calendar/create",
+    method: "POST",
+    token: token,
+    body: {
+      name,
+      year,
+    },
+  });
+}
+
+export async function myCalendars(token: string) {
+  return await makeRequest({
+    path: "/api/calendar/my",
+    method: "GET",
+    token: token,
+  });
+}
+
+export async function deleteCalendar(token: string, id: string) {
+  return await makeRequest({
+    path: "/api/calendar/" + id + "/delete",
+    method: "DELETE",
+    token: token,
+  });
+}
+
+export async function getCalendar(token: string, id: string) {
+  return await makeRequest({
+    path: "/api/calendar/" + id,
+    method: "GET",
+    token: token,
+  });
+}

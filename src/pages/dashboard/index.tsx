@@ -14,9 +14,14 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { Box, Flex, Heading, Spinner } from "@chakra-ui/react";
 import GridLayout from "@/components/GridLayout";
-import { FaPlus } from "react-icons/fa";
+import { FaEye, FaPlus, FaTrash } from "react-icons/fa";
+import { Calendar } from "@/util/types/Calendar";
+import { createCalendar, deleteCalendar, myCalendars } from "@/util/rest";
+import PopupManager from "@/util/PopupManager";
 
 export default function Dashboard() {
+  const [calendars, setCalendars] = React.useState<Calendar[]>([]);
+
   const { userInfo, loggedIn, loaded } = useLoggedIn();
 
   const router = useRouter();
@@ -24,8 +29,24 @@ export default function Dashboard() {
   useEffect(() => {
     if (loaded && !loggedIn) {
       router.push("/account/auth");
+    } else if (loaded && loggedIn) {
+      reload();
     }
   }, [loaded, loggedIn]);
+
+  const reload = () => {
+    myCalendars(localStorage.getItem("token") as string).then(async (res) => {
+      if (res.status === 200) {
+        setCalendars(res.payload.calendar);
+      } else {
+        await PopupManager.alertAsync({
+          title: "Fehler",
+          description:
+            "Kalender konnten nicht geladen werden: " + res.payload.error,
+        });
+      }
+    });
+  };
 
   if (!loaded) {
     return (
@@ -54,10 +75,117 @@ export default function Dashboard() {
           specialEntries={[
             {
               icon: <FaPlus />,
-              onClick: async () => {},
+              onClick: async () => {
+                const name = await PopupManager.promptAsync({
+                  title: "Neuer Kalender",
+                  helperText:
+                    "Bitte geben Sie einen Namen für den Kalender ein.",
+                });
+                if (!name) {
+                  return;
+                }
+
+                const year = await PopupManager.promptAsync({
+                  title: "Neuer Kalender",
+                  helperText: "Bitte geben Sie ein Jahr für den Kalender ein.",
+                });
+
+                if (!year) {
+                  return;
+                }
+
+                if (!parseInt(year)) {
+                  await PopupManager.alertAsync({
+                    title: "Fehler",
+                    description: "Bitte geben Sie eine Zahl ein.",
+                  });
+                  return;
+                }
+
+                const res = await createCalendar(
+                  name,
+                  parseInt(year),
+                  localStorage.getItem("token") as string,
+                );
+
+                if (res.status !== 200) {
+                  await PopupManager.alertAsync({
+                    title: "Fehler",
+                    description: "Der Kalender konnte nicht erstellt werden.",
+                  });
+                  return;
+                }
+
+                await PopupManager.alertAsync({
+                  title: "Erfolg",
+                  description: "Der Kalender wurde erfolgreich erstellt.",
+                });
+
+                reload();
+              },
             },
           ]}
-          entries={[]}
+          entries={
+            calendars
+              ? calendars.map((c) => {
+                  return {
+                    title: c.name + " (" + c.year + ")",
+                    fields: [],
+                    buttonRows: [
+                      {
+                        buttons: [
+                          {
+                            text: "Öffnen",
+                            onClick: () => {
+                              router.push("/dashboard/" + c._id);
+                            },
+                            colorScheme: "green",
+                            icon: <FaEye />,
+                          },
+                          {
+                            text: "Löschen",
+                            onClick: async () => {
+                              if (
+                                !(await PopupManager.confirmAsync({
+                                  title: "Löschen",
+                                  question:
+                                    "Willst du den Kalender wirklich löschen?",
+                                }))
+                              )
+                                return;
+
+                              const res = await deleteCalendar(
+                                localStorage.getItem("token") as string,
+                                c._id,
+                              );
+
+                              if (res.status !== 200) {
+                                await PopupManager.alertAsync({
+                                  title: "Fehler",
+                                  description:
+                                    "Der Kalender konnte nicht gelöscht werden.",
+                                });
+                                return;
+                              }
+
+                              await PopupManager.alertAsync({
+                                title: "Erfolg",
+                                description:
+                                  "Der Kalender wurde erfolgreich gelöscht.",
+                              });
+
+                              reload();
+                            },
+                            colorScheme: "red",
+                            icon: <FaTrash />,
+                          },
+                        ],
+                      },
+                    ],
+                  };
+                })
+              : []
+          }
         />
       </Box>
     </>
