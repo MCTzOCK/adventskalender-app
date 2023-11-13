@@ -12,7 +12,9 @@ import * as React from "react";
 import { useLoggedIn } from "@/util/useLoggedIn";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { Flex, Spinner } from "@chakra-ui/react";
+import { Box, Flex, Heading, Spinner } from "@chakra-ui/react";
+import GridLayout from "@/components/GridLayout";
+import { FaPlus } from "react-icons/fa";
 
 export default function Dashboard() {
   const { userInfo, loggedIn, loaded } = useLoggedIn();
@@ -40,5 +42,24 @@ export default function Dashboard() {
     );
   }
 
-  return <></>;
+  return (
+    <>
+      <Box p={5}>
+        <Heading>Meine Kalender</Heading>
+        <GridLayout
+          search={{
+            allow: true,
+            searchFields: true,
+          }}
+          specialEntries={[
+            {
+              icon: <FaPlus />,
+              onClick: async () => {},
+            },
+          ]}
+          entries={[]}
+        />
+      </Box>
+    </>
+  );
 }
