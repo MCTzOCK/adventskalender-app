@@ -9,6 +9,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <ChakraProvider theme={theme}>
         <Component {...pageProps} />
       </ChakraProvider>
+      <div id={"__chakra-manual-mount-point-do-not-use"}></div>
     </>
   );
 }

@@ -36,7 +36,14 @@ export default async function handle(
       });
 
       if (!user) {
-        res.status(400).json({ error: "Bad Request" });
+        res.status(400).json({ error: "User not found" });
+        return;
+      }
+
+      if (
+        user.password !== createHash("sha256").update(password).digest("hex")
+      ) {
+        res.status(400).json({ error: "Password incorrect" });
         return;
       }
 
@@ -89,7 +96,7 @@ export default async function handle(
       }
 
       if (
-        (await UserModel.find({
+        (await UserModel.findOne({
           username: username,
         })) != null
       ) {

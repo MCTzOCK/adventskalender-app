@@ -16,6 +16,7 @@ export async function register(username: string, password: string) {
     body: {
       username,
       password,
+      action: "register",
     },
   });
 }
@@ -27,6 +28,7 @@ export async function login(username: string, password: string) {
     body: {
       username,
       password,
+      action: "login",
     },
   });
 }
@@ -35,8 +37,9 @@ export async function verifyToken(token: string) {
   return await makeRequest({
     path: "/api/account/auth",
     method: "POST",
+    token: token,
     body: {
-      token,
+      action: "verify-token",
     },
   });
 }
