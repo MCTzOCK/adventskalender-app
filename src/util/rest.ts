@@ -83,3 +83,32 @@ export async function getCalendar(token: string, id: string) {
     token: token,
   });
 }
+
+export async function createDoor(
+  token: string,
+  id: string,
+  title: string,
+  description: string,
+  image: string,
+  day: number,
+) {
+  return await makeRequest({
+    path: "/api/calendar/" + id + "/doors/create",
+    method: "POST",
+    token: token,
+    body: {
+      title,
+      description,
+      image,
+      day,
+    },
+  });
+}
+
+export async function getDoors(id: string, token?: string) {
+  return await makeRequest({
+    path: "/api/calendar/" + id + "/doors",
+    method: "GET",
+    token: token || undefined,
+  });
+}
