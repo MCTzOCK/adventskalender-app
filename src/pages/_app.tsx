@@ -14,6 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
       </ChakraProvider>
       <div id={"__chakra-manual-mount-point-do-not-use"}></div>
+      <div id={"manual-mount-point"}></div>
     </>
   );
 }
