@@ -25,7 +25,7 @@ export default function NavigationBar() {
         direction={["column", "row"]}
       >
         <Flex gap={4} alignItems={"center"} as={Link} href={"/"}>
-          <Heading fontWeight={1000} color={"primary.500"}>
+          <Heading fontWeight={1000} color={"green.500"}>
             Adventskalender
           </Heading>
         </Flex>

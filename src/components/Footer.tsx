@@ -49,12 +49,12 @@ export default function Footer() {
                 as="h1"
                 fontSize={"3xl"}
                 fontWeight={1000}
-                color={"primary.500"}
+                color={"green.500"}
               >
                 Adventskalender
               </Heading>
               <Text mt={2} color="white" fontSize="md">
-                Developed by Ben Siebert. <br />
+                Developed in 3 hours by Ben Siebert. <br />
                 Made with ❤ and ☕ in Hattingen.
               </Text>
             </Box>
